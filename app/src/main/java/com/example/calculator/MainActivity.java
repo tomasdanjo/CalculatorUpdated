@@ -15,11 +15,18 @@ public class MainActivity extends AppCompatActivity {
     double firstNum, secondNum;;
 
     String operation;
+    String equation;
+    boolean equalsClicked;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        equation="";
+        equalsClicked = false;
+
+        Stack<String> operands = new Stack<>();
+        Stack<String> operators = new Stack<>();
 
         Button num0 = (Button) findViewById(R.id.num0);
         Button num1 = (Button) findViewById(R.id.num1);
@@ -52,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
             operation=null;
             result.setText("0");
             ac.setText("AC");
+            equation="";
+            equalsClicked=false;
         });
 
         ArrayList<Button> nums = new ArrayList<>();
@@ -66,17 +75,25 @@ public class MainActivity extends AppCompatActivity {
         nums.add(num8);
         nums.add(num9);
 
-        for (Button b : nums){
-            b.setOnClickListener(view->{
-                if(!result.getText().toString().equals("0")){
-                    result.setText(result.getText().toString() + b.getText().toString());
 
-                }else{
-                    result.setText(b.getText().toString());
+
+        for(Button num:nums){
+            num.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (!result.getText().toString().equals("0") && equalsClicked==false) {
+                        result.setText(result.getText().toString() + num.getText().toString());
+
+                    } else {
+                        equalsClicked = false;
+                        result.setText(num.getText().toString());
+                    }
+                    ac.setText("C");
                 }
-                ac.setText("C");
             });
         }
+
+
 
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,15 +106,19 @@ public class MainActivity extends AppCompatActivity {
                     result.setText("0");
                     ac.setText("AC");
                 }
+                equalsClicked = false;
 
 
             }
         });
 
         period.setOnClickListener(view->{
-            if(!result.getText().toString().contains(".")){
-
-                result.setText(result.getText().toString()+period.getText().toString());
+            String temp = result.getText().toString();
+            if(!temp.contains(".")){
+                result.setText(temp+period.getText().toString());
+            }else if(temp.substring(temp.length()-1).contains(".")){
+                temp = temp.substring(0,temp.length()-1);
+                result.setText(temp);
             }
         });
 
@@ -106,22 +127,6 @@ public class MainActivity extends AppCompatActivity {
         btnOp.add(minus);
         btnOp.add(multiply);
         btnOp.add(divide);
-
-
-        for(Button b: btnOp){
-            b.setOnClickListener(view->{
-                if(result.getText().toString().contains("%")){
-                    String temp = result.getText().toString();
-
-                    firstNum = (Double.parseDouble(temp.substring(0,temp.length()-1)))/100;
-                }else{
-                    firstNum = Double.parseDouble(result.getText().toString());
-                }
-
-                operation = b.getText().toString();
-                result.setText("0");
-            });
-        }
 
         flipSign.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
                     }else{
                         result.setText("-"+result.getText().toString());
                     }
+                    equalsClicked=false;
                 }
             }
         });
@@ -145,49 +151,63 @@ public class MainActivity extends AppCompatActivity {
                     String temp = result.getText().toString();
                     double per = Double.parseDouble(temp)/100;
                     result.setText(String.valueOf(per));
+                    equalsClicked = false;
 
                 }
             }
         });
 
+
+        for (Button b : btnOp) {
+            b.setOnClickListener(view -> {
+                String currentOperation = b.getText().toString();
+                String num = result.getText().toString();
+
+                if (num.isEmpty()) {
+                    // If the result is empty, replace the last two characters in equation with the current operation
+                    if (!equation.isEmpty() && isOperator(equation.charAt(equation.length() - 1))) {
+                        equation = equation.substring(0, equation.length() - 2) + currentOperation + " ";
+                    } else {
+                        equation += currentOperation + " ";
+                    }
+                } else {
+                    equation += num + " " + currentOperation + " ";
+                }
+
+                result.setText("");
+            });
+        }
+
+
+
+
         equals.setOnClickListener(view->{
+            equalsClicked = true;
+            String num = result.getText().toString();
+            if(!num.isEmpty())equation+=num;
+            String ans = String.valueOf(Calculator.evaluateEquation(equation));
+            result.setText(ans);
+            equation="";
 
-            if(result.getText().toString().contains("%")){
-                String temp = result.getText().toString();
-                secondNum = (Double.parseDouble(temp.substring(0,temp.length()-1)))/100;
-            }else{
-                secondNum = Double.parseDouble(result.getText().toString());
-            }
-
-
-            try{
-                double output = evaluate(firstNum,secondNum,operation);
-                result.setText(String.valueOf(output));
-                firstNum=output;
-            }catch (ArithmeticException e){
-                result.setText(e.getMessage());
-            }
 
         });
 
-        Stack<String> equation = new Stack<>();
+
+
     }
 
-
-
-    double evaluate(double num1, double num2, String op){
-        switch (op){
-            case "+":
-                return num1+num2;
-            case "-":
-                return num1-num2;
-            case "x":
-                return num1*num2;
-            case "/":
-                if(num2==0)throw new ArithmeticException("undefined");
-                return num1/num2;
+    boolean isOperator(char c){
+        switch (c){
+            case '+':
+            case '-':
+            case 'x':
+            case '/':
+                return true;
+            default:
+                return false;
         }
-
-        return 0;
     }
+
+
+
 }
