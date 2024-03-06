@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,7 +19,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
 
         Button num0 = (Button) findViewById(R.id.num0);
@@ -42,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
         Button minus = (Button) findViewById(R.id.minus);
         Button equals = (Button) findViewById(R.id.equals);
         Button period = (Button) findViewById(R.id.period);
+
+        Button delete = (Button) findViewById(R.id.backspace);
 
         TextView result = (TextView) findViewById(R.id.result);
 
@@ -73,9 +75,24 @@ public class MainActivity extends AppCompatActivity {
                     result.setText(b.getText().toString());
                 }
                 ac.setText("C");
-
             });
         }
+
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String temp  = result.getText().toString();
+                if(temp.length()>1){
+                    temp = temp.substring(0,temp.length()-1);
+                    result.setText(temp);
+                }else{
+                    result.setText("0");
+                    ac.setText("AC");
+                }
+
+
+            }
+        });
 
         period.setOnClickListener(view->{
             if(!result.getText().toString().contains(".")){
@@ -118,7 +135,6 @@ public class MainActivity extends AppCompatActivity {
                         result.setText("-"+result.getText().toString());
                     }
                 }
-
             }
         });
 
@@ -127,7 +143,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if(!result.getText().toString().contains("%")){
                     String temp = result.getText().toString();
-                    result.setText(temp+"%");
+                    double per = Double.parseDouble(temp)/100;
+                    result.setText(String.valueOf(per));
+
                 }
             }
         });
@@ -151,7 +169,11 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
+
+        Stack<String> equation = new Stack<>();
     }
+
+
 
     double evaluate(double num1, double num2, String op){
         switch (op){
