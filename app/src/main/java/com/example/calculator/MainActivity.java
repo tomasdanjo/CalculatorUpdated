@@ -25,8 +25,6 @@ public class MainActivity extends AppCompatActivity {
         equation="";
         equalsClicked = false;
 
-        Stack<String> operands = new Stack<>();
-        Stack<String> operators = new Stack<>();
 
         Button num0 = (Button) findViewById(R.id.num0);
         Button num1 = (Button) findViewById(R.id.num1);
