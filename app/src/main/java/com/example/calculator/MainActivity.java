@@ -135,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
             String temp = result.getText().toString();
 
             if(!temp.contains(".")){
+                if(temp.equals(""))temp="0";
                 result.setText(temp+period.getText().toString());
             }else if(temp.substring(temp.length()-1).contains(".")){
                 temp = temp.substring(0,temp.length()-1);
