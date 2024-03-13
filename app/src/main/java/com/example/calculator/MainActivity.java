@@ -136,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
 
             if(!temp.contains(".")){
                 if(temp.equals(""))temp="0";
+                if(temp.equals("-"))temp="-0";
                 result.setText(temp+period.getText().toString());
             }else if(temp.substring(temp.length()-1).contains(".")){
                 temp = temp.substring(0,temp.length()-1);
@@ -168,7 +169,8 @@ public class MainActivity extends AppCompatActivity {
                         result.setText(temp.substring(1,temp.length()));
 
                     }else{
-                        result.setText("-"+result.getText().toString());
+                        String temp = result.getText().toString();
+                        result.setText("-"+temp);
                     }
                     equalsClicked=false;
                 }
