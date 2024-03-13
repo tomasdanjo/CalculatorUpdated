@@ -5,5 +5,5 @@
     <color name="white">#DFDFDF</color>
     <color name="grey">#A4A4A4</color>
     <color name="dark_grey">#2F2F2F</color>
-
+    <color name="darker_grey">#222222</color>
 </resources>
